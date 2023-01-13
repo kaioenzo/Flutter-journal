@@ -7,19 +7,30 @@ import 'package:uuid/uuid.dart';
 import '../../helpers/weekday.dart';
 
 class AddJournalScreen extends StatefulWidget {
-  AddJournalScreen({super.key, required this.journal});
+  AddJournalScreen({super.key, required this.journal, required this.isToUpdate});
   final Journal journal;
   final service = JournalService();
+  final bool isToUpdate;
 
   @override
   State<AddJournalScreen> createState() => _AddJournalScreenState();
 }
 
 class _AddJournalScreenState extends State<AddJournalScreen> {
-  final _formKey = GlobalKey<FormState>();
   final myController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   Future<bool> registerJournal() async {
+    if (widget.isToUpdate) {
+      var result = await widget.service.update(
+        Journal(
+            id: widget.journal.id,
+            content: myController.text,
+            createdAt: widget.journal.createdAt,
+            updatedAt: DateTime.now()),
+      );
+      return result;
+    }
     var result = await widget.service.register(
       Journal(
           id: const Uuid().v1(),

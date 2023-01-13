@@ -95,13 +95,28 @@ class JournalCard extends StatelessWidget {
     }
   }
 
-  callAddJournalScreen(BuildContext context) {
-    Navigator.pushNamed(
-      context,
-      'add-journal',
-      arguments:
-          Journal(id: const Uuid().v1(), content: journal?.content ?? '', createdAt: showedDate, updatedAt: showedDate),
-    ).then(
+  callAddJournalScreen(
+    BuildContext context,
+  ) {
+    Navigator.pushNamed(context, 'add-journal',
+            arguments: journal != null
+                ? {
+                    'journal': Journal(
+                        id: journal!.id,
+                        content: journal!.content,
+                        createdAt: journal!.createdAt,
+                        updatedAt: journal!.updatedAt),
+                    'isToUpdate': true
+                  }
+                : {
+                    'journal': Journal(
+                        id: const Uuid().v1(),
+                        content: journal?.content ?? '',
+                        createdAt: showedDate,
+                        updatedAt: showedDate),
+                    'isToUpdate': false
+                  })
+        .then(
       (value) {
         refreshFunction();
         if (value == true) {

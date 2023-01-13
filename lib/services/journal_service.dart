@@ -15,7 +15,10 @@ class JournalService {
     ],
   );
 
-  Uri getUri() {
+  Uri getUri({String? id}) {
+    if (id != null) {
+      return Uri.parse("$url$resource$id");
+    }
     return Uri.parse("$url$resource");
   }
 
@@ -27,6 +30,19 @@ class JournalService {
       headers: {'Content-Type': 'application/json'},
     );
     if (response.statusCode == 201) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> update(Journal journal) async {
+    String data = json.encode(journal.toMap());
+    http.Response response = await client.put(
+      getUri(id: journal.id),
+      body: data,
+      headers: {'Content-Type': 'application/json'},
+    );
+    if (response.statusCode == 200 || response.statusCode == 204) {
       return true;
     }
     return false;
