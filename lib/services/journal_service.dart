@@ -48,6 +48,14 @@ class JournalService {
     return false;
   }
 
+  Future<bool> delete(String id) async {
+    var response = await http.delete(getUri(id: id));
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
+
   Future<List<Journal>> getAll() async {
     http.Response response = await client.get(getUri());
     if (!(response.statusCode == 200)) {
