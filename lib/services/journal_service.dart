@@ -1,10 +1,13 @@
+import 'dart:convert';
+
+import 'package:flutter_webapi_first_course/models/journal.dart';
 import 'package:flutter_webapi_first_course/services/http_interceptors.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_interceptor/http/intercepted_client.dart';
 
 class JournalService {
-  static const String url = 'http://192.168.22.184:3000/';
-  static const String resource = "learnhttp2/";
+  static const String url = 'http://192.168.1.107:3000/';
+  static const String resource = "journals/";
 
   http.Client client = InterceptedClient.build(
     interceptors: [
@@ -16,13 +19,30 @@ class JournalService {
     return Uri.parse("$url$resource");
   }
 
-  register(String content) {
-    client.post(
+  Future<bool> register(Journal journal) async {
+    String data = json.encode(journal.toMap());
+    http.Response response = await client.post(
       getUri(),
-      body: {
-        "content": content,
-      },
+      body: data,
+      headers: {'Content-Type': 'application/json'},
     );
+    if (response.statusCode == 201) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<List<Journal>> getAll() async {
+    http.Response response = await client.get(getUri());
+    if (!(response.statusCode == 200)) {
+      throw Exception();
+    }
+    List<dynamic> dynamicList = json.decode(response.body);
+    List<Journal> journals = [];
+    for (var jsonMap in dynamicList) {
+      journals.add(Journal.fromMap(jsonMap));
+    }
+    return journals;
   }
 
   Future<String> get() async {

@@ -1,3 +1,5 @@
+import 'package:uuid/uuid.dart';
+
 class Journal {
   String id;
   String content;
@@ -11,8 +13,28 @@ class Journal {
     required this.updatedAt,
   });
 
+  Journal.empty()
+      : id = const Uuid().v1(),
+        content = '',
+        createdAt = DateTime.now(),
+        updatedAt = DateTime.now();
+
+  Journal.fromMap(Map<String, dynamic> map)
+      : id = map['id'],
+        content = map['content'],
+        createdAt = DateTime.parse(map['createdAt']),
+        updatedAt = DateTime.parse(map['updatedAt']);
   @override
   String toString() {
     return "$content \ncreated_at: $createdAt\nupdated_at:$updatedAt";
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'content': content,
+      'createdAt': createdAt.toString(),
+      'updatedAt': updatedAt.toString(),
+    };
   }
 }
